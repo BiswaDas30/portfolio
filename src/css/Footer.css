@@ -1,0 +1,9 @@
+footer {
+  text-align: center;
+  padding: 40px 5vw 50px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ash);
+  opacity: 0.6;
+  letter-spacing: 0.08em;
+}

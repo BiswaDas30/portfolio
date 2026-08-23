@@ -1,0 +1,113 @@
+.missions {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.missions h2 {
+  font-size: 2.1rem;
+  margin: 0 0 40px;
+}
+.mission-track {
+  position: relative;
+  padding-left: 34px;
+}
+.mission-track::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(var(--crimson-bright), var(--onyx2) 90%);
+}
+.mission {
+  position: relative;
+  margin-bottom: 44px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.mission.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+.mission:last-child {
+  margin-bottom: 0;
+}
+.mission::before {
+  content: '';
+  position: absolute;
+  left: -34px;
+  top: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 3px solid var(--crimson-bright);
+  box-shadow: 0 0 0 4px var(--ink);
+  transform: scale(0.4);
+  opacity: 0.5;
+  transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.4, 1), opacity 0.4s, box-shadow 0.4s;
+}
+.mission.in-view::before {
+  transform: scale(1);
+  opacity: 1;
+  box-shadow: 0 0 0 4px var(--ink), 0 0 14px 2px rgba(224, 38, 63, 0.55);
+}
+.mission-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.mission-rank {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.rank-anbu {
+  background: var(--ink);
+  color: var(--crimson-bright);
+  border: 1px solid var(--crimson-bright);
+}
+.rank-chunin {
+  background: var(--crimson-dim);
+  color: var(--moon);
+}
+.rank-genin {
+  background: var(--onyx2);
+  color: var(--ash);
+}
+.mission h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--moon);
+}
+.mission .dates {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ash);
+}
+.mission ul {
+  margin: 14px 0 0;
+  padding-left: 20px;
+  color: var(--ash);
+  line-height: 1.75;
+  font-size: 0.94rem;
+}
+.mission ul li::marker {
+  color: var(--crimson-bright);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mission,
+  .mission::before {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

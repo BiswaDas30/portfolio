@@ -1,0 +1,38 @@
+.nindo {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.nindo h2 {
+  font-size: 2.1rem;
+  margin: 0 0 26px;
+  color: var(--moon);
+}
+.nindo-quote {
+  border-left: 3px solid var(--crimson-bright);
+  padding: 6px 0 6px 22px;
+  margin: 0 0 26px;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--moon);
+  font-family: 'Shippori Mincho', serif;
+  font-weight: 500;
+}
+.nindo p.body {
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: var(--ash);
+  max-width: 70ch;
+}
+.exploring {
+  margin-top: 32px;
+  padding: 18px 22px;
+  background: var(--mist);
+  border: 1px solid rgba(163, 20, 46, 0.3);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  color: var(--ash);
+  line-height: 1.7;
+}
+.exploring strong {
+  color: var(--crimson-bright);
+}

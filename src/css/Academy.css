@@ -1,0 +1,29 @@
+.academy-section {
+  background: var(--onyx2);
+}
+.academy {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.academy h2 {
+  font-size: 2.1rem;
+  margin: 0 0 30px;
+}
+.record-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(163, 20, 46, 0.2);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.record-row .r-title {
+  font-weight: 600;
+  color: var(--moon);
+}
+.record-row .r-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--crimson-bright);
+}
