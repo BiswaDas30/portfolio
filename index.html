@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biswaranjan Das — Bingo Book Entry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Noto+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#08070a;
+    --onyx:#141116;
+    --onyx2:#1c171c;
+    --crimson:#a3142e;
+    --crimson-bright:#e0263f;
+    --crimson-dim:#5c0f1f;
+    --ash:#9a939c;
+    --moon:#ece7ee;
+    --gold:#c9a227;
+    --mist:rgba(163,20,46,0.07);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--moon);
+    font-family:'Noto Sans',sans-serif;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--crimson-bright);color:var(--ink);}
+  h1,h2,h3,.display{font-family:'Shippori Mincho',serif; letter-spacing:0.02em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:var(--crimson-bright);}
+
+  .void-bg{
+    position:fixed; inset:0; z-index:-2;
+    background:
+      radial-gradient(circle at 80% 8%, rgba(163,20,46,0.16), transparent 38%),
+      radial-gradient(circle at 10% 85%, rgba(163,20,46,0.09), transparent 42%),
+      var(--ink);
+  }
+  .rain-canvas{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:0.55; mix-blend-mode:screen;}
+  .flash{position:fixed; inset:0; z-index:-1; pointer-events:none; background:rgba(163,20,46,0.05); opacity:0; transition:opacity 0.15s ease;}
+  .feathers{position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;}
+  .feather{
+    position:absolute; top:-6%; width:10px; height:22px;
+    background:linear-gradient(180deg, #2a2429, #0a0809);
+    clip-path:polygon(50% 0%, 100% 35%, 70% 100%, 50% 80%, 30% 100%, 0% 35%);
+    opacity:0.25; animation:fall linear infinite;
+  }
+  @keyframes fall{
+    from{transform:translateY(-10vh) rotate(0deg);} 
+    to{transform:translateY(115vh) rotate(340deg);} 
+  }
+  @media (prefers-reduced-motion: reduce){ .feather{animation:none; display:none;} .rain-canvas{display:none;} }
+
+  /* ===== NAV ===== */
+  nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 5vw;
+    background:rgba(8,7,10,0.88);
+    backdrop-filter:blur(8px);
+    border-bottom:2px solid var(--crimson-dim);
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .sharingan{width:40px; height:40px; flex:none;}
+  .sharingan svg{width:100%; height:100%; animation:spin 30s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .brand-name{font-family:'Shippori Mincho',serif; font-weight:700; font-size:1.05rem;}
+  .brand-name small{display:block; font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--crimson-bright); letter-spacing:0.15em; text-transform:uppercase; opacity:0.85;}
+  nav ul{list-style:none; display:flex; gap:26px; margin:0; padding:0;}
+  nav a{color:var(--ash); text-decoration:none; font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase; font-weight:600; transition:color .2s;}
+  nav a:hover{color:var(--crimson-bright);}
+  .navtoggle{display:none; background:none; border:1px solid var(--crimson-dim); color:var(--moon); padding:6px 10px; border-radius:4px; font-family:'JetBrains Mono',monospace; cursor:pointer;}
+
+  section{padding:90px 5vw; position:relative;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.25em;
+    font-size:0.72rem; color:var(--crimson-bright); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:"写輪眼"; color:var(--gold); font-size:0.95rem; font-family:'Shippori Mincho',serif; letter-spacing:0.1em;}
+
+  /* ===== HERO / BINGO BOOK ===== */
+  .hero{min-height:94vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 5vw;}
+  .moon-glow{
+    position:absolute; top:6%; right:10%; width:220px; height:220px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #4a1015, #1a0508 60%, transparent 72%);
+    box-shadow:0 0 90px 30px rgba(163,20,46,0.18);
+    filter:blur(1px);
+  }
+  .dossier{
+    width:min(860px, 100%); position:relative; z-index:2;
+    background:linear-gradient(175deg, var(--onyx), #100d11);
+    border-radius:10px; border:1px solid rgba(163,20,46,0.35);
+    box-shadow:0 40px 80px rgba(0,0,0,0.6), inset 0 0 60px rgba(163,20,46,0.05);
+    animation:rise 0.7s ease-out; overflow:hidden;
+  }
+  @keyframes rise{from{opacity:0; transform:translateY(24px) scale(0.98);} to{opacity:1; transform:translateY(0) scale(1);}}
+  .dossier-eye{position:relative;}
+  .dossier-eye .iris{transform-origin:50px 50px; transform:scale(0); animation:irisBloom 0.5s cubic-bezier(.2,.9,.3,1.2) 0.55s forwards;}
+  .dossier-eye .pupil{opacity:0; animation:fadeIn 0.2s ease 0.85s forwards;}
+  .dossier-eye .tomoe{opacity:0; transform-origin:50px 50px; transform:scale(0.2) rotate(-40deg); animation:tomoeSnap 0.32s cubic-bezier(.3,1.6,.4,1) forwards;}
+  .dossier-eye .t1{animation-delay:1.0s;}
+  .dossier-eye .t2{animation-delay:1.18s;}
+  .dossier-eye .t3{animation-delay:1.36s;}
+  .eye-flash{position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle, rgba(224,38,63,0.9), transparent 70%); opacity:0; animation:eyeFlashPop 0.5s ease 1.36s forwards;}
+  @keyframes irisBloom{from{transform:scale(0);} to{transform:scale(1);}}
+  @keyframes fadeIn{to{opacity:1;}}
+  @keyframes tomoeSnap{0%{opacity:0; transform:scale(0.2) rotate(-40deg);} 60%{opacity:1; transform:scale(1.15) rotate(6deg);} 100%{opacity:1; transform:scale(1) rotate(0deg);}}
+  @keyframes eyeFlashPop{0%{opacity:0;} 40%{opacity:0.9;} 100%{opacity:0;}}
+  .field{opacity:0; transform:translateY(10px); animation:fieldIn 0.5s ease forwards; animation-delay:calc(1.55s + var(--d)*0.09s);}
+  @keyframes fieldIn{to{opacity:1; transform:translateY(0);}}
+  @media (prefers-reduced-motion: reduce){
+    .dossier-eye .iris, .dossier-eye .pupil, .dossier-eye .tomoe, .eye-flash, .field{animation:none !important; opacity:1 !important; transform:none !important;}
+  }
+  .dossier-top{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 30px; background:rgba(163,20,46,0.1); border-bottom:1px solid rgba(163,20,46,0.3);
+    font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--crimson-bright);
+  }
+  .dossier-inner{padding:42px 40px 40px; display:grid; grid-template-columns:180px 1fr; gap:36px; align-items:center;}
+  .dossier-eye{width:160px; height:160px; margin:0 auto;}
+  .dossier-eye svg{width:100%; height:100%;}
+  .id-label{font-family:'JetBrains Mono',monospace; font-size:0.64rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--ash); margin:0 0 6px;}
+  .dossier h1{font-size:2.5rem; margin:0 0 4px; line-height:1.05; color:var(--moon);}
+  .dossier .role{font-family:'JetBrains Mono',monospace; font-size:0.94rem; color:var(--crimson-bright); font-weight:700; margin-bottom:18px;}
+  .id-stats{display:grid; grid-template-columns:repeat(2,1fr); gap:10px 24px; margin-top:6px;}
+  .id-stat{border-top:1px solid rgba(163,20,46,0.25); padding-top:8px;}
+  .id-stat .k{font-family:'JetBrains Mono',monospace; font-size:0.6rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--ash);}
+  .id-stat .v{font-weight:600; font-size:0.9rem; color:var(--moon);}
+  .rank-badge{
+    display:inline-flex; align-items:center; gap:6px; margin-top:18px;
+    background:var(--crimson-dim); color:var(--moon); font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem; font-weight:700; letter-spacing:0.1em; padding:6px 14px; border-radius:3px;
+  }
+  .rank-badge::before{content:"●"; color:var(--gold);}
+  .hero-tagline{max-width:640px; text-align:center; margin-top:28px; color:var(--ash); font-size:0.95rem; line-height:1.7; font-style:italic;}
+  .hero-scroll-cue{text-align:center; margin-top:22px; font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--crimson-bright); letter-spacing:0.2em; text-transform:uppercase; opacity:0.6;}
+
+  /* ===== NINDO ===== */
+  .nindo{max-width:900px; margin:0 auto;}
+  .nindo h2{font-size:2.1rem; margin:0 0 26px; color:var(--moon);}
+  .nindo-quote{
+    border-left:3px solid var(--crimson-bright); padding:6px 0 6px 22px; margin:0 0 26px;
+    font-size:1.2rem; line-height:1.6; color:var(--moon); font-family:'Shippori Mincho',serif; font-weight:500;
+  }
+  .nindo p.body{font-size:1.02rem; line-height:1.85; color:var(--ash); max-width:70ch;}
+  .exploring{margin-top:32px; padding:18px 22px; background:var(--mist); border:1px solid rgba(163,20,46,0.3); border-radius:8px; font-size:0.92rem; color:var(--ash); line-height:1.7;}
+  .exploring strong{color:var(--crimson-bright);} 
+
+  /* ===== MISSION LOG ===== */
+  .missions{max-width:960px; margin:0 auto;}
+  .missions h2{font-size:2.1rem; margin:0 0 40px;}
+  .mission-track{position:relative; padding-left:34px;}
+  .mission-track::before{content:""; position:absolute; left:9px; top:6px; bottom:6px; width:2px; background:linear-gradient(var(--crimson-bright), var(--onyx2) 90%);} 
+  .mission{position:relative; margin-bottom:44px; opacity:0; transform:translateY(16px); transition:opacity 0.5s ease, transform 0.5s ease;}
+  .mission.in-view{opacity:1; transform:translateY(0);} 
+  .mission:last-child{margin-bottom:0;} 
+  .mission::before{content:""; position:absolute; left:-34px; top:6px; width:20px; height:20px; border-radius:50%; background:var(--ink); border:3px solid var(--crimson-bright); box-shadow:0 0 0 4px var(--ink); transform:scale(0.4); opacity:0.5; transition:transform 0.4s cubic-bezier(.3,1.6,.4,1), opacity 0.4s, box-shadow 0.4s;} 
+  .mission.in-view::before{transform:scale(1); opacity:1; box-shadow:0 0 0 4px var(--ink), 0 0 14px 2px rgba(224,38,63,0.55);} 
+  .mission-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; margin-bottom:6px;} 
+  .mission-rank{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:0.72rem; letter-spacing:0.1em; padding:3px 10px; border-radius:4px; text-transform:uppercase;} 
+  .rank-anbu{background:var(--ink); color:var(--crimson-bright); border:1px solid var(--crimson-bright);} 
+  .rank-chunin{background:var(--crimson-dim); color:var(--moon);} 
+  .rank-genin{background:var(--onyx2); color:var(--ash);} 
+  .mission h3{margin:0; font-size:1.35rem; color:var(--moon);} 
+  .mission .dates{font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--ash);} 
+  .mission ul{margin:14px 0 0; padding-left:20px; color:var(--ash); line-height:1.75; font-size:0.94rem;} 
+  .mission ul li::marker{color:var(--crimson-bright);} 
+
+  /* ===== JUTSU ===== */
+  .jutsu-grid{max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(2,1fr); gap:22px;} 
+  .jutsu-card{background:linear-gradient(160deg, var(--onyx2), #131013); border:1px solid rgba(163,20,46,0.25); border-radius:12px; padding:26px 26px 22px; position:relative;} 
+  .jutsu-card::before{content:attr(data-glyph); position:absolute; top:16px; right:18px; font-family:'Shippori Mincho',serif; font-size:2.2rem; color:var(--crimson-bright); opacity:0.15;} 
+  .jutsu-card h3{margin:0 0 4px; font-size:1.15rem; color:var(--gold);} 
+  .jutsu-card .sub{font-family:'JetBrains Mono',monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--crimson-bright); margin-bottom:16px; display:block;} 
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px;} 
+  .chip{font-family:'JetBrains Mono',monospace; font-size:0.76rem; padding:5px 11px; border-radius:16px; background:rgba(163,20,46,0.1); border:1px solid rgba(163,20,46,0.35); color:var(--ash);} 
+
+  /* ===== SHARINGAN EVOLUTION / SCROLLS ===== */
+  .scrolls{max-width:1150px; margin:0 auto;} 
+  .scrolls h2{font-size:2.1rem; margin:0 0 10px;} 
+  .scrolls .lead{color:var(--ash); max-width:66ch; margin:0 0 46px; line-height:1.75; font-size:0.96rem;} 
+  .evolution-track{position:relative;} 
+  .evolution-track::before{
+    content:""; position:absolute; left:29px; top:10px; bottom:10px; width:2px;
+    background:linear-gradient(var(--onyx2), var(--crimson-bright) 60%, var(--gold));
+  } 
+  .evo-row{display:grid; grid-template-columns:60px 1fr; gap:26px; margin-bottom:36px; align-items:start; opacity:0; transform:translateY(20px); transition:opacity 0.55s ease, transform 0.55s ease;} 
+  .evo-row.in-view{opacity:1; transform:translateY(0);} 
+  .evo-row:last-child{margin-bottom:0;} 
+  .evo-icon{width:60px; height:60px; position:relative; z-index:2;} 
+  .evo-icon svg{width:100%; height:100%; filter:drop-shadow(0 0 8px rgba(224,38,63,0.35));} 
+  .evo-icon .evo-tomoe{opacity:0; transform-origin:50px 50px; transform:scale(0.3) rotate(-60deg);} 
+  .evo-row.in-view .evo-icon .evo-tomoe{animation:evoTomoeSnap 0.4s cubic-bezier(.3,1.6,.4,1) forwards;} 
+  .evo-row.in-view .evo-icon .evo-tomoe:nth-of-type(1){animation-delay:0.1s;} 
+  .evo-row.in-view .evo-icon .evo-tomoe:nth-of-type(2){animation-delay:0.25s;} 
+  .evo-row.in-view .evo-icon .evo-tomoe:nth-of-type(3){animation-delay:0.4s;} 
+  .evo-row.in-view .evo-icon .evo-tomoe:nth-of-type(4){animation-delay:0.55s;} 
+  .evo-row.in-view .evo-icon .evo-tomoe:nth-of-type(5){animation-delay:0.7s;} 
+  .evo-row.in-view .evo-icon .evo-tomoe:nth-of-type(6){animation-delay:0.85s;} 
+  @keyframes evoTomoeSnap{0%{opacity:0; transform:scale(0.3) rotate(-60deg);} 60%{opacity:1; transform:scale(1.2) rotate(8deg);} 100%{opacity:1; transform:scale(1) rotate(0deg);}} 
+  .evo-card{background:linear-gradient(160deg, var(--onyx), #110e12); border:1px solid rgba(163,20,46,0.3); border-radius:10px; padding:22px 26px; position:relative; transition:transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;} 
+  .evo-row:hover .evo-card{transform:translateY(-3px); border-color:rgba(224,38,63,0.55); box-shadow:0 14px 28px rgba(0,0,0,0.4);} 
+  .evo-row:hover .evo-icon svg{animation:evoHoverSpin 0.9s ease;} 
+  @keyframes evoHoverSpin{to{transform:rotate(360deg);}} 
+  .evo-card.eternal{border-color:var(--gold); box-shadow:0 0 30px rgba(201,162,39,0.08);} 
+  .evo-stage{font-family:'JetBrains Mono',monospace; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.14em; font-weight:700; color:var(--crimson-bright); margin-bottom:6px; display:block;} 
+  .evo-card.eternal .evo-stage{color:var(--gold);} 
+  .evo-card h3{margin:0 0 10px; font-size:1.22rem; color:var(--moon);} 
+  .evo-card p{font-size:0.92rem; line-height:1.65; color:var(--ash); margin:0 0 12px;} 
+  .evo-meta{font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--gold); font-weight:600; margin-bottom:6px;} 
+  .evo-card a.link{font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-weight:700; color:var(--crimson-bright); text-decoration:none; border-bottom:1px solid var(--crimson-bright);} 
+
+  /* ===== ACADEMY ===== */
+  .academy{max-width:800px; margin:0 auto;} 
+  .academy h2{font-size:2.1rem; margin:0 0 30px;} 
+  .record-row{display:flex; justify-content:space-between; align-items:baseline; padding:16px 0; border-bottom:1px solid rgba(163,20,46,0.2); flex-wrap:wrap; gap:6px;} 
+  .record-row .r-title{font-weight:600; color:var(--moon);} 
+  .record-row .r-meta{font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--crimson-bright);} 
+
+  /* ===== CONTACT ===== */
+  .contract{max-width:760px; margin:0 auto; text-align:center;} 
+  .contract h2{font-size:2.1rem; margin:0 0 16px;} 
+  .contract p.sub{color:var(--ash); margin:0 0 34px; font-size:1rem;} 
+  .contract-links{display:flex; flex-wrap:wrap; gap:16px; justify-content:center;} 
+  .contract-link{display:flex; align-items:center; gap:10px; padding:14px 22px; border-radius:8px; background:var(--onyx2); border:1px solid rgba(163,20,46,0.35); color:var(--moon); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.88rem; transition:all .2s;} 
+  .contract-link:hover{border-color:var(--crimson-bright); background:rgba(163,20,46,0.1); transform:translateY(-2px);} 
+  .contract-link .stamp{font-family:'Shippori Mincho',serif; color:var(--crimson-bright); font-size:1.1rem;} 
+
+  footer{text-align:center; padding:40px 5vw 50px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--ash); opacity:0.6; letter-spacing:0.08em;} 
+
+  @media (max-width:820px){
+    nav ul{display:none;} 
+    .navtoggle{display:block;} 
+    .dossier-inner{grid-template-columns:1fr; text-align:center;} 
+    .id-stats{grid-template-columns:1fr 1fr;} 
+    .jutsu-grid{grid-template-columns:1fr;} 
+    .evo-row{grid-template-columns:1fr; text-align:left;} 
+    .evo-icon{margin:0 auto;} 
+    .evolution-track::before{display:none;} 
+    section{padding:64px 6vw;} 
+  }
+  @media (prefers-reduced-motion: reduce){
+    .sharingan svg{animation:none;} 
+    .dossier{animation:none;} 
+  }
+</style>
+</head>
+<body>
+<div class="void-bg"></div>
+<canvas id="rain" class="rain-canvas"></canvas>
+<div class="flash" id="flash"></div>
+<div class="feathers" id="feathers"></div>
+
+<nav>
+  <div class="brand">
+    <div class="sharingan">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="#a3142e" stroke="#08070a" stroke-width="4"/>
+        <g fill="#08070a">
+          <path d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/>
+          <g transform="rotate(120 50 50)"><path d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/></g>
+          <g transform="rotate(240 50 50)"><path d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/></g>
+        </g>
+        <circle cx="50" cy="50" r="9" fill="#08070a"/>
+      </svg>
+    </div>
+    <div class="brand-name">Biswaranjan Das<small>Bingo Book · S-Rank Entry</small></div>
+  </div>
+  <ul>
+    <li><a href="#nindo">Nindō</a></li>
+    <li><a href="#missions">Missions</a></li>
+    <li><a href="#jutsu">Jutsu</a></li>
+    <li><a href="#scrolls">Awakening</a></li>
+    <li><a href="#academy">Academy</a></li>
+    <li><a href="#contract">Contract</a></li>
+  </ul>
+  <button class="navtoggle">☰</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="moon-glow"></div>
+  <div class="dossier" id="dossier">
+    <div class="dossier-top"><span>Bingo Book · Field Record</span><span>Status: Active</span></div>
+    <div class="dossier-inner">
+      <div class="dossier-eye" id="heroEye">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="#a3142e" stroke="#08070a" stroke-width="4" class="iris"/>
+          <g fill="#08070a">
+            <path class="tomoe t1" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/>
+            <g transform="rotate(120 50 50)"><path class="tomoe t2" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/></g>
+            <g transform="rotate(240 50 50)"><path class="tomoe t3" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/></g>
+          </g>
+          <circle cx="50" cy="50" r="9" fill="#08070a" class="pupil"/>
+        </svg>
+        <div class="eye-flash" id="eyeFlash"></div>
+      </div>
+      <div>
+        <p class="id-label field" style="--d:0">Registered Name</p>
+        <h1 class="field" style="--d:1">Biswaranjan Das</h1>
+        <div class="role field" style="--d:2">SOFTWARE ENGINEER CONSULTANT II · ALLSTATE INDIA</div>
+        <div class="id-stats">
+          <div class="id-stat field" style="--d:3"><div class="k">Village</div><div class="v">Bengaluru, India</div></div>
+          <div class="id-stat field" style="--d:4"><div class="k">Years Active</div><div class="v">7+ years</div></div>
+          <div class="id-stat field" style="--d:5"><div class="k">Specialty</div><div class="v">Full-Stack · Insurance Systems</div></div>
+          <div class="id-stat field" style="--d:6"><div class="k">Known Techniques</div><div class="v">Java · Spring Boot · React</div></div>
+        </div>
+        <div class="rank-badge field" style="--d:7">ANBU Captain — Currently Active</div>
+      </div>
+    </div>
+  </div>
+  <p class="hero-tagline field" style="--d:8">"The strongest shinobi aren't the ones who are seen — they're the ones who make sure everything still stands, quietly, long after they've moved on."</p>
+</section>
+<div class="hero-scroll-cue">— scroll to open the file —</div>
+
+<!-- NINDO -->
+<section id="nindo" class="nindo">
+  <p class="eyebrow">Nindō · The Path I Walk</p>
+  <h2>Power spent in silence</h2>
+  <p class="nindo-quote">Some engineers build for the credit. I build for the system that's still standing at 3am when no one's watching.</p>
+  <p class="body">
+    I'm a full-stack engineer with over seven years in the field, most of it spent deep inside insurance-domain platforms that real agents depend on every day. My core discipline runs through Java, Spring Boot, and microservices on the backend, with React on the front lines — but the real work has always been the unglamorous kind: hardening systems against failure, absorbing complexity so the next person doesn't have to, and carrying production stability as a personal responsibility rather than a task.
+  </p>
+  <p class="body" style="margin-top:16px;">
+    I've mentored engineers who've gone on to ship the features that got noticed, and I was fine with that — the mission mattered more than the byline. Lately that same discipline has extended into AI-assisted engineering: GitHub Copilot and generative tooling folded into daily practice for debugging, edge-case analysis, and cutting the noise out of delivery.
+  </p>
+  <div class="exploring">
+    <strong>Current training arc:</strong> building <em>DharmaAI_Backend</em>, an agentic side project using RAG, LangChain, and LangGraph — sharpening a new set of eyes for a discipline still being written.
+  </div>
+</section>
+
+<!-- MISSION LOG -->
+<section id="missions" class="missions">
+  <p class="eyebrow">Mission Log · Field Record</p>
+  <h2>Rank progression</h2>
+  <div class="mission-track">
+
+    <div class="mission">
+      <div class="mission-head">
+        <span class="mission-rank rank-anbu">ANBU Captain</span>
+        <h3>Software Engineer Consultant II — Allstate India</h3>
+      </div>
+      <div class="dates">Mar 2026 — Present</div>
+      <ul>
+        <li>Drive technical discussions and propose solutions that improve platform scalability, performance, and maintainability.</li>
+        <li>Partner with Product Managers, Business Analysts, and Architects to translate complex requirements into scalable technical designs.</li>
+        <li>Lead end-to-end feature delivery — from requirement analysis through deployment and post-production support.</li>
+        <li>Mentor junior engineers through code reviews, technical coaching, and knowledge-sharing sessions.</li>
+        <li>Champion AI-assisted engineering practices (GitHub Copilot, Generative AI) to raise team-wide delivery speed and code quality.</li>
+      </ul>
+    </div>
+
+    <div class="mission">
+      <div class="mission-head">
+        <span class="mission-rank rank-chunin">Chūnin</span>
+        <h3>Software Engineer Consultant I — Allstate India</h3>
+      </div>
+      <div class="dates">Oct 2020 — Mar 2026</div>
+      <ul>
+        <li>Designed and built scalable, secure enterprise applications (Java, Spring Boot, REST APIs, React) for critical insurance workflows on a biweekly release cadence.</li>
+        <li>Owned High-Level and Low-Level Design for resilient, maintainable architectures; led the OAuth migration and the EPS-to-LDS data-loading migration.</li>
+        <li>Improved platform stability with resiliency patterns, rollback mechanisms, and feature toggles.</li>
+        <li>Monitored production with Splunk and Datadog to cut incidents and improve observability.</li>
+        <li>Enforced TDD and peer code review as standard practice across delivery.</li>
+      </ul>
+    </div>
+
+    <div class="mission">
+      <div class="mission-head">
+        <span class="mission-rank rank-genin">Genin</span>
+        <h3>Associate Consultant — Allstate India</h3>
+      </div>
+      <div class="dates">Feb 2019 — Sep 2020</div>
+      <ul>
+        <li>Learned core insurance-domain workflows and business-critical application ecosystems from the ground up.</li>
+        <li>Translated functional specs into clean, maintainable code alongside senior engineers.</li>
+        <li>Built foundations in Agile practice — stand-ups, sprint planning, unit testing, and debugging.</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- JUTSU -->
+<section id="jutsu" style="background:var(--onyx2);">
+  <p class="eyebrow">Jutsu List · Technical Arsenal</p>
+  <h2 style="max-width:1100px; margin:0 auto 40px; font-size:2.1rem;">Techniques mastered</h2>
+  <div class="jutsu-grid">
+
+    <div class="jutsu-card" data-glyph="忍">
+      <h3>Ninjutsu — Core Backend</h3>
+      <span class="sub">Direct combat techniques</span>
+      <div class="chip-row">
+        <span class="chip">Java</span><span class="chip">Spring Boot</span><span class="chip">Microservices</span>
+        <span class="chip">REST APIs</span><span class="chip">MySQL</span><span class="chip">Distributed Systems</span>
+      </div>
+    </div>
+
+    <div class="jutsu-card" data-glyph="幻">
+      <h3>Genjutsu — Frontend Craft</h3>
+      <span class="sub">The illusion the user sees</span>
+      <div class="chip-row">
+        <span class="chip">React</span><span class="chip">JavaScript</span><span class="chip">HTML</span><span class="chip">CSS</span>
+      </div>
+    </div>
+
+    <div class="jutsu-card" data-glyph="封">
+      <h3>Fuinjutsu — Sealing &amp; Ops</h3>
+      <span class="sub">Containment, delivery, defense</span>
+      <div class="chip-row">
+        <span class="chip">Git</span><span class="chip">Jenkins</span><span class="chip">Docker</span><span class="chip">CI/CD</span>
+        <span class="chip">Postman</span><span class="chip">SonarQube</span><span class="chip">Splunk</span><span class="chip">Datadog</span>
+        <span class="chip">OAuth</span><span class="chip">Feature Toggles</span>
+      </div>
+    </div>
+
+    <div class="jutsu-card" data-glyph="仙">
+      <h3>Sage Mode — AI-Assisted Engineering</h3>
+      <span class="sub">Borrowed power, sharpened focus</span>
+      <div class="chip-row">
+        <span class="chip">GitHub Copilot</span><span class="chip">Generative AI Dev</span><span class="chip">AI-Driven Debugging</span>
+        <span class="chip">RAG</span><span class="chip">LangChain</span><span class="chip">LangGraph</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SHARINGAN EVOLUTION / SCROLLS -->
+<section id="scrolls" class="scrolls">
+  <p class="eyebrow">Awakening · Sharingan Evolution</p>
+  <h2>Every system, another tomoe</h2>
+  <p class="lead">The Sharingan doesn't awaken all at once — it matures with every trial survived. Each system below marks a stage in that same progression, from first awakening to the eyes carried now.</p>
+
+  <div class="evolution-track">
+
+    <div class="evo-row">
+      <div class="evo-icon">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="#a3142e" stroke="#08070a" stroke-width="4"/>
+          <path class="evo-tomoe" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z" fill="#08070a"/>
+          <circle cx="50" cy="50" r="9" fill="#08070a"/>
+        </svg>
+      </div>
+      <div class="evo-card">
+        <span class="evo-stage">Stage I · One Tomoe</span>
+        <h3>Helpdesk Turbo</h3>
+        <p>An AI-enabled support and routing platform. Refined intelligent ticket-routing logic that cut incoming support tickets from roughly 100 down to about 10 in typical scenarios.</p>
+        <div class="evo-meta">~90% Ticket Reduction · Generative AI Routing</div>
+      </div>
+    </div>
+
+    <div class="evo-row">
+      <div class="evo-icon">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="#a3142e" stroke="#08070a" stroke-width="4"/>
+          <g fill="#08070a">
+            <path class="evo-tomoe" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/>
+            <g transform="rotate(180 50 50)"><path class="evo-tomoe" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/></g>
+          </g>
+          <circle cx="50" cy="50" r="9" fill="#08070a"/>
+        </svg>
+      </div>
+      <div class="evo-card">
+        <span class="evo-stage">Stage II · Two Tomoe</span>
+        <h3>Sales Side Kick (SSK)</h3>
+        <p>A guided advisory assistant that helps agents understand customer needs and recommend suitable policies. Reduced policy binding time by streamlining workflow interactions and business-rule execution.</p>
+        <div class="evo-meta">Advisory Workflow · Business Rules Engine</div>
+      </div>
+    </div>
+
+    <div class="evo-row">
+      <div class="evo-icon">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="#a3142e" stroke="#08070a" stroke-width="4"/>
+          <g fill="#08070a">
+            <path class="evo-tomoe" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/>
+            <g transform="rotate(120 50 50)"><path class="evo-tomoe" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/></g>
+            <g transform="rotate(240 50 50)"><path class="evo-tomoe" d="M50,50 C46,38 46,26 54,22 C62,18 70,26 66,34 C62,42 54,44 50,50 Z"/></g>
+          </g>
+          <circle cx="50" cy="50" r="9" fill="#08070a"/>
+        </svg>
+      </div>
+      <div class="evo-card">
+        <span class="evo-stage">Stage III · Three Tomoe — Matured</span>
+        <h3>Access Management Utils (AMU)</h3>
+        <p>Centralized permission and access-management platform for 1,000+ users. Implemented real-time permission management and emergency rollback capability that helped avoid multiple production outages.</p>
+        <div class="evo-meta">1,000+ users · OAuth · Resilient Access Control</div>
+      </div>
+    </div>
+
+    <div class="evo-row">
+      <div class="evo-icon">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="#0e0b0d" stroke="#e0263f" stroke-width="3"/>
+          <g fill="#e0263f">
+            <path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z"/>
+            <g transform="rotate(120 50 50)"><path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z"/></g>
+            <g transform="rotate(240 50 50)"><path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z"/></g>
+          </g>
+          <circle cx="50" cy="50" r="8" fill="#e0263f"/>
+        </svg>
+      </div>
+      <div class="evo-card">
+        <span class="evo-stage">Stage IV · Mangekyō — Forged Through Loss</span>
+        <h3>Advisor Pro</h3>
+        <p>The primary agent-facing insurance sales platform, used by 10,000+ agents for quoting, policy sales, renewals, and servicing. Delivered enhancements that improved quoting efficiency and strengthened the overall agent experience under real production pressure.</p>
+        <div class="evo-meta">10,000+ agents · Java · Spring Boot · React</div>
+      </div>
+    </div>
+
+    <div class="evo-row">
+      <div class="evo-icon">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="#0e0b0d" stroke="#c9a227" stroke-width="3"/>
+          <g fill="#c9a227">
+            <path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z"/>
+            <g transform="rotate(60 50 50)"><path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z" opacity="0.75"/></g>
+            <g transform="rotate(120 50 50)"><path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z"/></g>
+            <g transform="rotate(180 50 50)"><path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z" opacity="0.75"/></g>
+            <g transform="rotate(240 50 50)"><path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z"/></g>
+            <g transform="rotate(300 50 50)"><path class="evo-tomoe" d="M50,50 L38,8 L60,16 Z" opacity="0.75"/></g>
+          </g>
+          <circle cx="50" cy="50" r="8" fill="#c9a227"/>
+        </svg>
+      </div>
+      <div class="evo-card eternal">
+        <span class="evo-stage">Stage V · Eternal Mangekyō — In Progress</span>
+        <h3>DharmaAI_Backend</h3>
+        <p>An agentic project collecting Vedic and Sanatan Dharma scripture texts to offer guidance on life's karma cycle. Built on a RAG pipeline with LangChain and LangGraph orchestration, driving multiple LLMs — the eyes that don't dim, still being earned.</p>
+        <div class="evo-meta">RAG · LangChain · LangGraph · Python</div>
+        <br>
+        <a class="link" href="https://github.com/BiswaDas30/DharmaAI_Backend" target="_blank" rel="noopener">View scroll on GitHub →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ACADEMY -->
+<section id="academy" class="academy" style="background:var(--onyx2);">
+  <p class="eyebrow">Academy Records · Education &amp; Certification</p>
+  <h2>Training foundation</h2>
+  <div class="record-row">
+    <span class="r-title">Bachelor of Technology (BTech), Electrical Engineering</span>
+    <span class="r-meta">National Institute of Science and Technology · 2017</span>
+  </div>
+  <div class="record-row">
+    <span class="r-title">AWS Certified</span>
+    <span class="r-meta">Cloud Practitioner / Solutions Architect</span>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contract" class="contract">
+  <p class="eyebrow" style="justify-content:center;">Send a Raven</p>
+  <h2>Reach out</h2>
+  <p class="sub">Open to conversations on engineering, architecture, or the odd side quest into agentic AI.</p>
+  <div class="contract-links">
+    <a class="contract-link" href="mailto:brdas78@gmail.com"><span class="stamp">封</span> brdas78@gmail.com</a>
+    <a class="contract-link" href="https://www.linkedin.com/in/biswaranjan-das-225966146" target="_blank" rel="noopener"><span class="stamp">印</span> LinkedIn</a>
+    <a class="contract-link" href="https://github.com/BiswaDas30" target="_blank" rel="noopener"><span class="stamp">巻</span> GitHub</a>
+  </div>
+</section>
+
+<footer>Field Record on file since 2019 · Power spent quietly, sacrifice kept close</footer>
+
+<script>
+  const container = document.getElementById('feathers');
+  const featherCount = window.innerWidth < 700 ? 4 : 8;
+  for(let i=0;i<featherCount;i++){
+    const f = document.createElement('div');
+    f.className = 'feather';
+    f.style.left = Math.random()*100 + 'vw';
+    f.style.animationDuration = (10 + Math.random()*12) + 's';
+    f.style.animationDelay = (Math.random()*-20) + 's';
+    f.style.opacity = 0.1 + Math.random()*0.2;
+    container.appendChild(f);
+  }
+
+  // Rain over Amegakure — canvas-based, respects reduced-motion
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!prefersReducedMotion){
+    const canvas = document.getElementById('rain');
+    const ctx = canvas.getContext('2d');
+    let w, h, drops;
+
+    function sizeCanvas(){
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    function makeDrops(){
+      const density = w < 700 ? 90 : 170;
+      drops = Array.from({length: density}, () => ({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        len: 14 + Math.random()*18,
+        speed: 5 + Math.random()*7,
+        drift: 1.4 + Math.random()*0.6,
+        opacity: 0.08 + Math.random()*0.22
+      }));
+    }
+    sizeCanvas();
+    makeDrops();
+    window.addEventListener('resize', () => { sizeCanvas(); makeDrops(); });
+
+    function tick(){
+      ctx.clearRect(0,0,w,h);
+      ctx.lineCap = 'round';
+      for(const d of drops){
+        ctx.strokeStyle = `rgba(200,205,222,${d.opacity})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x - d.drift*4, d.y + d.len);
+        ctx.stroke();
+        d.x -= d.drift;
+        d.y += d.speed;
+        if(d.y > h || d.x < -20){
+          d.y = -d.len;
+          d.x = Math.random()*w + 40;
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    // rare distant flash for atmosphere
+    const flashEl = document.getElementById('flash');
+    function scheduleFlash(){
+      const delay = 9000 + Math.random()*16000;
+      setTimeout(() => {
+        flashEl.style.opacity = '1';
+        setTimeout(() => { flashEl.style.opacity = '0'; }, 120);
+        scheduleFlash();
+      }, delay);
+    }
+    scheduleFlash();
+  }
+  // Scroll-triggered reveals: mission timeline dots + Sharingan evolution rows
+  const revealTargets = document.querySelectorAll('.mission, .evo-row');
+  if('IntersectionObserver' in window){
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25, rootMargin: '0px 0px -8% 0px' });
+    revealTargets.forEach(el => revealObserver.observe(el));
+  } else {
+    revealTargets.forEach(el => el.classList.add('in-view'));
+  }
+</script>
+</body>
+</html>
